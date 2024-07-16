@@ -1,7 +1,6 @@
 package ru.gudkov.test_task.controller;
 
 import org.springframework.web.bind.annotation.*;
-import ru.gudkov.test_task.dto.Paste;
 import ru.gudkov.test_task.services.ServiceCRUDPasteApp;
 
 import java.util.Collection;
@@ -17,7 +16,7 @@ public class ControllerPasteApp {
 
     @GetMapping("/public")
     private Collection<?> getPasteListOnAllUser() {
-       return service.getPasteList();
+        return service.getPasteList();
     }
 
     @GetMapping("/{unlisted}")
@@ -26,8 +25,10 @@ public class ControllerPasteApp {
     }
 
     @PostMapping
-    private String setNewPasteFromUser(@RequestBody Paste paste) {
-        service.create(paste);
+    private String setNewPasteFromUser(@RequestParam(name = "body") String body,
+                                       @RequestParam(value = "time") String time,
+                                       @RequestParam(value = "access") String access) {
+        service.create(body, time, access);
         String hashCode = service.getItemHash();
         return "http:/" + "/my-app-pastebin.home/" + "/" + hashCode;
     }

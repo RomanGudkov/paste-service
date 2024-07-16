@@ -8,6 +8,6 @@ public interface CRUDPasteApp<T> {
 
     T getPasteByLink(String hash);
 
-    T create(T item);
+    T create(String body, String time, String access);
 
 }
