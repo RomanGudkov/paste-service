@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public enum EnumExpirationTime {
+public enum ExpirationTimeENUM {
 
     MINUTES_10(LocalDateTime.now().plusMinutes(10)),
     HOURS_1(LocalDateTime.now().plusHours(1)),
@@ -17,7 +17,7 @@ public enum EnumExpirationTime {
 
     private final LocalDateTime expirationValue;
 
-    EnumExpirationTime(LocalDateTime expirationValue) {
+    ExpirationTimeENUM(LocalDateTime expirationValue) {
         this.expirationValue = expirationValue;
     }
 }
