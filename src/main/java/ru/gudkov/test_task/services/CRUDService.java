@@ -6,7 +6,7 @@ public interface CRUDService<T> {
 
     Collection<T> getPasteList();
 
-    T getByLink(Long hash);
+    T getByLink(String hash);
 
     T create(T object);
 

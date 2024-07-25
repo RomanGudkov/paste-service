@@ -20,5 +20,5 @@ public class Paste {
     private LocalDateTime expirationTime;
     private String access;
     @Column(name = "hash")
-    private Long hashCode;
+    private String hashCode;
 }

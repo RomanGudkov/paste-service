@@ -12,4 +12,5 @@ public class PasteDto {
     private String pasteBody;
     private String expirationTime;
     private String access;
+    private String hash;
 }

@@ -10,8 +10,9 @@ import org.springframework.stereotype.Service;
 import ru.gudkov.test_task.dto.PasteDto;
 import ru.gudkov.test_task.entity.Paste;
 import ru.gudkov.test_task.enums.AccessToPasteENUM;
-import ru.gudkov.test_task.enums.ExpirationTimeENUM;
 import ru.gudkov.test_task.repository.PasteRepository;
+import ru.gudkov.test_task.value_generate.ExpirationGenerate;
+import ru.gudkov.test_task.value_generate.HashGenerate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PasteCRUDService implements CRUDService<PasteDto> {
     private final PasteRepository repository;
+    private final HashGenerate hashGenerate;
+    private final ExpirationGenerate expirationGenerate;
 
     @Override
     public Collection getPasteList() {
@@ -37,7 +40,7 @@ public class PasteCRUDService implements CRUDService<PasteDto> {
     }
 
     @Override
-    public PasteDto getByLink(Long hash) {
+    public PasteDto getByLink(String hash) {
         log.info("get by link method called");
         Paste byHashCode = repository.findByHashCode(hash);
         return LocalDateTime.now()
@@ -56,27 +59,20 @@ public class PasteCRUDService implements CRUDService<PasteDto> {
     private PasteDto mapToDto(Paste paste) {
         PasteDto newPasteDto = new PasteDto();
         newPasteDto.setPasteBody(paste.getPasteBody());
-        newPasteDto.setAccess(getAccess(paste.getAccess()));
+        newPasteDto.setAccess(paste.getAccess());
+        newPasteDto.setHash(paste.getHashCode());
         return newPasteDto;
     }
 
     private Paste mapToEntity(PasteDto pasteDto) {
         Paste paste = new Paste();
+        hashGenerate.setHash(paste.hashCode());
+        expirationGenerate.setTime(pasteDto.getExpirationTime());
         paste.setPasteBody(pasteDto.getPasteBody());
-        paste.setExpirationTime(getExpirationDate(pasteDto.getExpirationTime()));
-        paste.setAccess(pasteDto.getAccess());
-        paste.setHashCode((long) pasteDto.hashCode());
+        paste.setExpirationTime(expirationGenerate.getExpirationDate());
+        paste.setAccess(AccessToPasteENUM.valueOf(pasteDto.getAccess()).toString());
+        paste.setHashCode(hashGenerate.getValue());
         return paste;
-    }
-
-    private LocalDateTime getExpirationDate(String time) {
-        ExpirationTimeENUM expirationTime = ExpirationTimeENUM.valueOf(time);
-        return expirationTime.getExpirationValue();
-    }
-
-    private String getAccess(String access) {
-        AccessToPasteENUM accessToPasteENUM = AccessToPasteENUM.valueOf(access);
-        return accessToPasteENUM.toString();
     }
 }
 

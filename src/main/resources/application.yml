@@ -7,3 +7,11 @@ spring:
   jpa:
     show-sql: true
     hibernate.ddl-auto: create   # update
+logging:
+  level:
+    org:
+      springframework: INFO
+response:
+  message_url: http://my-app-pastebin.home/
+  message_empty: List is empty
+  message_expired: The paste has expired

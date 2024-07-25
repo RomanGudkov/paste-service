@@ -10,7 +10,7 @@ import ru.gudkov.test_task.entity.Paste;
 import java.time.LocalDateTime;
 
 public interface PasteRepository extends JpaRepository<Paste, Long> {
-    Paste findByHashCode(Long hashCode);
+    Paste findByHashCode(String hashCode);
     @Query("SELECT p FROM Paste p " +
             "WHERE p.expirationTime >= :time " +
             "AND p.access = 'PUBLIC' " +
