@@ -3,6 +3,7 @@ package ru.gudkov.test_task.services;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,49 +23,48 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PasteCRUDService implements CRUDService<PasteDto> {
+public class PasteCRUDService implements CRUDService<String> {
     private final PasteRepository repository;
     private final HashGenerate hashGenerate;
     private final ExpirationGenerate expirationGenerate;
+    @Value("${response.message.records_size}")
+    private int recordsSize;
+    @Value("${response.message.expired}")
+    private String expiredMessage;
+    @Value("${response.message.is_empty}")
+    private String emptyMessage;
 
     @Override
-    public Collection getPasteList() {
+    public Collection<String> getPasteList() {
         log.info("get list method called");
-        PageRequest expirationTime = PageRequest.of(0, 10, Sort.by("expirationTime")
+        PageRequest expirationTime = PageRequest.of(0, recordsSize, Sort.by("expirationTime")
                 .descending());
         Page<Paste> page = repository.findAllByExpirationTimeAndAccess(LocalDateTime.now(), expirationTime);
         return repository.count() == 0 ?
-                null : page.getContent().stream()
+                Collections.singleton(emptyMessage) : page.getContent().stream()
                 .map(Paste::getPasteBody)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PasteDto getByLink(String hash) {
+    public String getByLink(String hash) {
         log.info("get by link method called");
-        Paste byHashCode = repository.findByHashCode(hash);
+        Paste paste = repository.findByHashCode(hash);
         return LocalDateTime.now()
-                .isAfter(byHashCode.getExpirationTime()) ?
-                null : mapToDto(byHashCode);
+                .isAfter(paste.getExpirationTime()) ?
+                expiredMessage : paste.getPasteBody();
     }
 
     @Override
-    public PasteDto create(PasteDto pasteDto) {
+    public String create(PasteDto pasteDto) {
         log.info("create method called");
         Paste paste = mapToEntity(pasteDto);
         repository.save(paste);
-        return mapToDto(paste);
+        return paste.getHashCode();
     }
 
-    private PasteDto mapToDto(Paste paste) {
-        PasteDto newPasteDto = new PasteDto();
-        newPasteDto.setPasteBody(paste.getPasteBody());
-        newPasteDto.setAccess(paste.getAccess());
-        newPasteDto.setHash(paste.getHashCode());
-        return newPasteDto;
-    }
-
-    private Paste mapToEntity(PasteDto pasteDto) {
+    protected Paste mapToEntity(PasteDto pasteDto) {
+        log.info("mapToEntity method called");
         Paste paste = new Paste();
         hashGenerate.setHash(paste.hashCode());
         expirationGenerate.setTime(pasteDto.getExpirationTime());

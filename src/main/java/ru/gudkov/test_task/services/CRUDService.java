@@ -1,5 +1,7 @@
 package ru.gudkov.test_task.services;
 
+import ru.gudkov.test_task.dto.PasteDto;
+
 import java.util.Collection;
 
 public interface CRUDService<T> {
@@ -8,6 +10,6 @@ public interface CRUDService<T> {
 
     T getByLink(String hash);
 
-    T create(T object);
+    T create(PasteDto object);
 
 }

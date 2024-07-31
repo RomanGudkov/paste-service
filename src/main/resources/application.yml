@@ -12,6 +12,8 @@ logging:
     org:
       springframework: INFO
 response:
-  message_url: http://my-app-pastebin.home/
-  message_empty: List is empty
-  message_expired: The paste has expired
+  message:
+    url: http://my-app-pastebin.home/
+    is_empty: No paste records
+    expired: The paste has expired
+    records_size: 10
